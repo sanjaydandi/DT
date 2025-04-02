@@ -1,0 +1,69 @@
+{% extends 'layout.html' %}
+
+{% block title %}Admin Login - Face Recognition Attendance System{% endblock %}
+
+{% block content %}
+<div class="login-page">
+    <div class="login-bg"></div>
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 col-lg-5">
+                <div class="login-container">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-shield fa-4x text-primary mb-3 login-logo"></i>
+                        <h2 class="card-title mb-0 text-white">Admin Login</h2>
+                        <p class="text-light opacity-75">Access the administrator dashboard</p>
+                    </div>
+                    
+                    <form method="POST" action="{{ url_for('admin_login') }}" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="username" class="form-label text-light">Username</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-user"></i>
+                                </span>
+                                <input type="text" class="form-control" id="username" name="username" placeholder="Enter your username" required autofocus>
+                                <div class="invalid-feedback">
+                                    Please enter your username.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label for="password" class="form-label text-light">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text">
+                                    <i class="fas fa-lock"></i>
+                                </span>
+                                <input type="password" class="form-control" id="password" name="password" placeholder="Enter your password" required>
+                                <div class="invalid-feedback">
+                                    Please enter your password.
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt me-2"></i>Login
+                            </button>
+                        </div>
+                    </form>
+                
+                    <div class="text-center py-3 mt-4 border-top border-secondary">
+                        <div class="small">
+                            <a href="{{ url_for('student_login') }}" class="text-light">Login as student instead</a>
+                        </div>
+                    </div>
+                
+                    <div class="text-center mt-2">
+                        <p class="text-light opacity-75 small">
+                            <i class="fas fa-info-circle me-1"></i>
+                            Default admin credentials: username <strong>admin</strong>, password <strong>admin</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

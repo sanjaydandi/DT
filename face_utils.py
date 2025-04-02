@@ -1,96 +1,90 @@
-import os
-import cv2
 import numpy as np
-import pandas as pd
-from datetime import datetime
+import cv2
+import logging
 
-FACE_DIR = "data/faces"
-ATTENDANCE_FILE = os.path.join(FACE_DIR, "attendance.csv")
+logger = logging.getLogger(__name__)
 
-# Ensure data directory exists
-os.makedirs(FACE_DIR, exist_ok=True)
+# Initialize face detector
+face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
-# Load OpenCV face detector
-face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + "haarcascade_frontalface_default.xml")
-
-def register_face(name):
-    """Captures a face from the webcam and saves the face embedding."""
-    cap = cv2.VideoCapture(0)
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            continue
+def encode_face(image):
+    """
+    Encodes a face from an image using a simplified method (face detection + image data).
+    
+    Args:
+        image: Image as numpy array
         
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(100, 100))
-
-        for (x, y, w, h) in faces:
-            face = gray[y:y+h, x:x+w]
-            face = cv2.resize(face, (100, 100))
-            face_path = os.path.join(FACE_DIR, f"{name}.npy")
-            np.save(face_path, face)
-            cap.release()
-            cv2.destroyAllWindows()
-            return f"Face registered for {name}!"
-
-        cv2.imshow("Register Face", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-    return "No face detected. Try again."
-
-def recognize_face():
-    """Recognizes a face from the webcam and marks attendance."""
-    cap = cv2.VideoCapture(0)
-    known_faces = {f.split(".")[0]: np.load(os.path.join(FACE_DIR, f)) for f in os.listdir(FACE_DIR) if f.endswith(".npy")}
-
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            continue
+    Returns:
+        face_encoding: Simple representation of face (cropped face image flattened)
+    """
+    try:
+        # Convert to grayscale for face detection
+        if len(image.shape) == 3:
+            gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        else:
+            gray = image
+            
+        # Detect faces
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
         
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-        faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(100, 100))
+        if len(faces) == 0:
+            logger.warning("No faces found in the image")
+            return None
+        
+        # Get the first face
+        x, y, w, h = faces[0]
+        
+        # Crop the face
+        face = gray[y:y+h, x:x+w]
+        
+        # Resize to standard size
+        face_resized = cv2.resize(face, (100, 100))
+        
+        # Flatten the face image to create a simple "encoding"
+        encoding = face_resized.flatten()
+        
+        # Normalize values
+        encoding = encoding / 255.0
+        
+        # Return as list for JSON serialization
+        return encoding.tolist()
+    
+    except Exception as e:
+        logger.error(f"Error encoding face: {str(e)}")
+        return None
 
-        for (x, y, w, h) in faces:
-            face = gray[y:y+h, x:x+w]
-            face = cv2.resize(face, (100, 100))
-
-            # Compare with registered faces
-            recognized_name = "Unknown"
-            min_mse = float("inf")
-
-            for name, known_face in known_faces.items():
-                mse = np.mean((face.astype("float") - known_face.astype("float")) ** 2)
-                if mse < min_mse and mse < 1000:  # Threshold
-                    min_mse = mse
-                    recognized_name = name
-
-            if recognized_name != "Unknown":
-                mark_attendance(recognized_name)
-
-            cap.release()
-            cv2.destroyAllWindows()
-            return recognized_name
-
-        cv2.imshow("Recognizing Face", frame)
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
-
-    cap.release()
-    cv2.destroyAllWindows()
-    return "No face recognized."
-
-def mark_attendance(name):
-    """Logs attendance in a CSV file."""
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    if not os.path.exists(ATTENDANCE_FILE):
-        df = pd.DataFrame(columns=["Name", "Timestamp"])
-    else:
-        df = pd.read_csv(ATTENDANCE_FILE)
-
-    new_entry = pd.DataFrame({"Name": [name], "Timestamp": [timestamp]})
-    df = pd.concat([df, new_entry], ignore_index=True)
-    df.to_csv(ATTENDANCE_FILE, index=False)
+def compare_faces(known_face_encoding, face_encoding_to_check, tolerance=0.6):
+    """
+    Compares a known face encoding with another face encoding to see if they match
+    using a simplified method (Euclidean distance).
+    
+    Args:
+        known_face_encoding: Known face encoding
+        face_encoding_to_check: Face encoding to check
+        tolerance: Tolerance for face comparison (higher is stricter)
+        
+    Returns:
+        boolean: True if faces match, False otherwise
+    """
+    try:
+        # Convert to numpy arrays if not already
+        if isinstance(known_face_encoding, list):
+            known_face_encoding = np.array(known_face_encoding)
+        
+        if isinstance(face_encoding_to_check, list):
+            face_encoding_to_check = np.array(face_encoding_to_check)
+        
+        # Calculate Euclidean distance between the encodings
+        distance = np.linalg.norm(known_face_encoding - face_encoding_to_check)
+        
+        # If distance is below threshold, consider it a match
+        # Note: Lower distances mean more similar faces
+        threshold = 30.0  # This value may need tuning
+        
+        logger.debug(f"Face comparison distance: {distance}, threshold: {threshold}")
+        
+        return distance < threshold
+    
+    except Exception as e:
+        logger.error(f"Error comparing faces: {str(e)}")
+        return False

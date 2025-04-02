@@ -1,0 +1,271 @@
+/* Custom styles for the attendance system */
+
+/* Webcam container styling */
+.webcam-container {
+    position: relative;
+    width: 100%;
+    max-width: 640px;
+    margin: 0 auto;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+#webcam-video, #webcam-canvas {
+    width: 100%;
+    background-color: #212529;
+    border-radius: 8px;
+}
+
+.webcam-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.webcam-container:hover .webcam-overlay {
+    opacity: 1;
+}
+
+/* Card customization */
+.card {
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Dashboard metrics styling */
+.metric-card {
+    border-left: 5px solid;
+    transition: all 0.3s;
+}
+
+.metric-card.primary {
+    border-left-color: var(--bs-primary);
+}
+
+.metric-card.success {
+    border-left-color: var(--bs-success);
+}
+
+.metric-card.info {
+    border-left-color: var(--bs-info);
+}
+
+.metric-card.warning {
+    border-left-color: var(--bs-warning);
+}
+
+.metric-icon {
+    font-size: 2.5rem;
+    opacity: 0.8;
+}
+
+/* Chart container */
+.chart-container {
+    position: relative;
+    height: 300px;
+    width: 100%;
+}
+
+/* Login and forms styling */
+.form-signin, .form-attendance {
+    width: 100%;
+    max-width: 400px;
+    padding: 15px;
+    margin: auto;
+    animation: fadeIn 1s;
+}
+
+/* Login background animation */
+.login-page {
+    position: relative;
+    min-height: 80vh;
+    overflow: hidden;
+}
+
+.login-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(-45deg, #343a40, #0d6efd, #20c997, #6610f2);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    z-index: -1;
+}
+
+.login-container {
+    position: relative;
+    z-index: 1;
+    background-color: rgba(33, 37, 41, 0.85);
+    border-radius: 10px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+    padding: 2rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+    animation: slideUp 0.8s;
+}
+
+.login-logo {
+    animation: pulse 2s infinite;
+}
+
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Hero section on homepage */
+.hero-section {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-dark) 100%);
+    color: white;
+    padding: 5rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="0" y="0"></rect><rect fill="rgba(255,255,255,0.1)" width="50" height="50" x="50" y="50"></rect></svg>');
+    opacity: 0.3;
+}
+
+/* Attendance table */
+.attendance-table th {
+    position: sticky;
+    top: 0;
+    background-color: var(--bs-dark);
+    z-index: 1;
+}
+
+/* Custom animation for feedback */
+@keyframes fadeInOut {
+    0% { opacity: 0; transform: translateY(-20px); }
+    10% { opacity: 1; transform: translateY(0); }
+    90% { opacity: 1; transform: translateY(0); }
+    100% { opacity: 0; transform: translateY(-20px); }
+}
+
+.face-feedback {
+    animation: fadeInOut 3s forwards;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .chart-container {
+        height: 250px;
+    }
+    
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+}
+.team-image-container {
+    transition: transform 0.3s ease-in-out;
+}
+
+.team-image-container:hover {
+    transform: scale(1.02);
+}
+
+.testimonial-carousel .btn {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+.object-fit-cover {
+    object-fit: cover;
+}
+
+.team-members-container {
+    gap: -1rem;
+}
+
+.team-member {
+    position: relative;
+    margin-right: -1rem;
+    transition: all 0.3s ease;
+    z-index: 1;
+}
+
+.team-member:hover {
+    z-index: 2;
+    transform: scale(1.05);
+}
+
+.team-member-img {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    border: 2px solid #fff;
+    object-fit: cover;
+    cursor: pointer;
+}
+
+.team-member::after {
+    content: attr(data-name) '\A' attr(data-role);
+    white-space: pre;
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    padding: 0.5rem 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    text-align: center;
+    min-width: max-content;
+}
+
+.team-member:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) translateY(-5px);
+}
